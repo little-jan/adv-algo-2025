@@ -1,4 +1,4 @@
-def aplusb(a: int, b:int) -> int:
+def aplusb(a, b):
     sum = int(a) + int(b)
     print(sum)
 
