@@ -1,6 +1,6 @@
-def aplusb(a, b):
+def aPlusb(a, b):
     sum = int(a) + int(b)
     print(sum)
 
 test = input().split()
-aplusb(test[0], test[1])
+aPlusb(test[0], test[1])
