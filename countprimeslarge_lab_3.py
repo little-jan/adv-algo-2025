@@ -1,35 +1,61 @@
-def divconq(lst, left, right, counter):
-    if right - left <= 5:
+def isprime(n, primes):
+    if n in primes:
+        return True
+    if n < 2:
+        return False
+    small_primes = (2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31)
+    if n in small_primes:
+        primes[n] = True
+        return True
+    for p in small_primes:
+        if n % p == 0 and n != p:
+            return False
+
+    d = n - 1
+    r = 0
+    while d % 2 == 0:
+        d //= 2
+        r += 1
+
+    test_bases = [3, 5, 7, 11, 13]
+    for a in test_bases:
+        if a >= n:
+            continue
+
+        x = pow(a, d, n)
+        if x == 1 or x == n - 1:
+            continue
+
+        for _ in range(r - 1):
+            x = pow(x, 2, n)
+            if x == n - 1:
+                break
+        else:
+            return False
+
+    primes[n] = True
+    return True
+
+
+def divconq(left, right, counter, primes):
+    if right - left <= 200:
         for i in range(left, right + 1):
-            if isprime(lst[i]):
+            if isprime(i + 1, primes):
                 counter[0] += 1
         return
-    else:
-        mid = (left + right) // 2
-        divconq(lst, left, mid, counter)
-        divconq(lst, mid + 1, right, counter)
 
-def isprime(val):
-    match val:
-        case 0 | 1:
-            return False
-        case 2 | 3:
-            return True
-        case _:
-            i = 2
-            while i * i <= val:
-                if val % i == 0:
-                    return False
-                i += 1
-            return True
+    mid = (left + right) // 2
+    divconq(left, mid, counter, primes)
+    divconq(mid + 1, right, counter, primes)
 
-def countprimes(num: int) -> int:
-    num = int(num)
+
+def countprimes(num):
+    if num < 2:
+        return 0
+    primes = {}
     counter = [0]
-    lst = list(range(1, num + 1))
-    divconq(lst, 0, len(lst) -1, counter)
+    divconq(0, num - 1, counter, primes)
     return counter[0]
 
-test = input()
-test = int(test)
+test = int(input())
 print(countprimes(test))
