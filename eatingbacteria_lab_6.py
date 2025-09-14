@@ -27,30 +27,3 @@ while eaten < hours and (i < len(bacterias) or heap):
     eaten += 1
 
 print(size)
-
-
-
-# bacterias.sort(reverse=True)
-#
-# uneaten = []
-# heap = []
-# i = 0
-# eaten = 0
-#
-# while eaten < hours and (i < len(bacterias) or heap):
-#     if i < len(bacterias) and bacterias[i] < size:
-#         while i < len(bacterias) and bacterias[i] < size:
-#             size = eating(size, bacterias[i])
-#             eaten += 1
-#             i += 1
-#
-#     if i < len(bacterias) and bacterias[i] >= size:
-#         while i < len(bacterias) and bacterias[i] >= size:
-#             heappush(heap, bacterias[i])
-#             i += 1
-#
-#     while heap and eaten < hours:
-#         size = eating(size, heappop(heap))
-#         eaten += 1
-#
-# print(size)
