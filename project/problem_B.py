@@ -1,36 +1,47 @@
-def find_max(vertex_weights, edges):   # vertex_weights is list, edges is key-value pairs (key is src, value is v)
-    final_costs = [0 for _ in vertex_weights]
+from collections import defaultdict
 
-    for i in range(len(vertex_weights)):
-        edge = i + 1
-        while True:
-            if edge not in edges:
-                break
-            else:
-                if final_costs[edge - 1] == 0:
-                    v_weight = edges[edge]
-                    final_costs[edge - 1] = v_weight
-                else:
-                    v_weight = edges[edge]
-                    if v_weight > final_costs[edge - 1]:
-                        final_costs[edge - 1] = v_weight
-                edge = edges[edge]
+def dfs_postorder(adjlist, visited, root):
+    postorder = []
+    def dfs(current):
+        if not visited[current]:
+            visited[current] = True
+            for neighbor in reversed(adjlist[current]):
+                dfs(neighbor)
+            postorder.append(current)
+    dfs(root)
+    return postorder
 
-    return final_costs
+def tranpose(adjlist):
+    n = len(adjlist)
+    result = [[] for _ in range(n)]
+    for u in range(n):
+        for v in adjlist[u]:
+            if v >= n:
+                result.extend([[] for _ in range(v - n + 1)])
+                n = len(result)
+            result[v].append(u)
+    return result
 
-vertices, num_edges = input().split()
-vertices, num_edges = int(vertices), int(num_edges)
+def kosarajus(adjlist):
+    postorder = []
+    visited = [False for _ in adjlist]
+    for i in range(1, len(adjlist)):
+        if not visited[i]:
+            postorder.extend(dfs_postorder(adjlist, visited, i))
+    adjlist = tranpose(adjlist)
+    visited = [False for _ in adjlist]
+    sccs = []
+    for i in reversed(postorder):
+        if not visited[i]:
+            sccs.append(dfs_postorder(adjlist, visited, i))
+    return sccs
 
-vertex_weights = []
-for i in range(vertices):
-    vertex_weights.append(int(input()))
+num_vertices, num_edges = map(int, input().split())
+vertices = [int(input()) for _ in range(num_vertices)]
+max_v = max(vertices) if vertices else 0
+adjlist = [[] for _ in range(max_v + 1)]
+for _ in range(num_edges):
+    src, v = map(int, input().split())
+    adjlist[src].append(v)
 
-edges = {}
-for j in range(num_edges):
-    key, value = input().split()
-    key, value = int(key), int(value)
-    edges[key] = value
-
-final_costs = find_max(vertex_weights, edges)
-for val in final_costs:
-    print(val)
+sccs = kosarajus(adjlist)
