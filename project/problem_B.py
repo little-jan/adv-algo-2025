@@ -1,3 +1,6 @@
+# doesn't hit timelimit on DOMJUDGE
+
+
 from collections import deque
 
 num_vertices, num_edges = map(int, input().split())
