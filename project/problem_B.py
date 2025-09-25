@@ -1,34 +1,36 @@
-def transpose(edges):
-    n = len(edges)
-    result = []
-
-    for u in reversed(range(n)):
-        src, v = edges[u]
-        result.append((v, src))
-
-    return result
-
+from collections import deque
 
 num_vertices, num_edges = map(int, input().split())
 
-vertices = []
+vertex_weights = [0]
 for i in range(num_vertices):
-    vertices.append(int(input()))
+    vertex_weights.append(int(input()))
 
-edges = []
+adj = [[] for _ in range(num_vertices + 1)]
 for i in range(num_edges):
-    src, v = map(int, input().split())
-    edges.append((src, v))
+    u, v = map(int, input().split())
+    adj[u].append(v)
 
-friend_costs = [0 for _ in range(num_vertices + 1)]
-seen = [False for _ in range(num_vertices + 1)]
-visited = [False for _ in range(num_vertices + 1)]
+friendship_costs = [0] * (num_vertices + 1)
 
-transposed = transpose(edges)
+for src in range(1, num_vertices + 1):
 
-for edge in transposed:
-    src, v = edge
-    friend_costs[v] = max(friend_costs[src], vertices[src-1])
+    q = deque([src])
+    reachable_people = {src}
 
-for val in friend_costs[1:]:
+    while q:
+        current = q.popleft()
+        for neighbor in adj[current]:
+            if neighbor not in reachable_people:
+                reachable_people.add(neighbor)
+                q.append(neighbor)
+
+    max_reachable_cost = 0
+    for person in reachable_people:
+        if person != src:
+            max_reachable_cost = max(max_reachable_cost, vertex_weights[person])
+
+    friendship_costs[src] = max_reachable_cost
+
+for val in friendship_costs[1:]:
     print(val)
