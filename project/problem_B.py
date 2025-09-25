@@ -1,5 +1,3 @@
-from collections import defaultdict
-
 def dfs_postorder(adjlist, visited, root):
     postorder = []
     def dfs(current):
@@ -38,10 +36,32 @@ def kosarajus(adjlist):
 
 num_vertices, num_edges = map(int, input().split())
 vertices = [int(input()) for _ in range(num_vertices)]
-max_v = max(vertices) if vertices else 0
-adjlist = [[] for _ in range(max_v + 1)]
+adjlist = [[] for _ in range(num_vertices + 1)]
 for _ in range(num_edges):
     src, v = map(int, input().split())
     adjlist[src].append(v)
 
 sccs = kosarajus(adjlist)
+print(sccs)
+
+friend_costs = [0 for _ in range(num_vertices + 1)]
+visited = []
+for i in sccs:
+    if len(i) > 1:
+        maxfirst = [0, 0]
+        maxsecond = [0, 0]
+        for j in i:
+            if vertices[j] > maxfirst[0]:
+                maxsecond = maxfirst[:]
+                maxfirst = [vertices[j], j]
+            elif vertices[j] > maxsecond[0]:
+                maxsecond = [vertices[j], j]
+        for j in i:
+            if j == maxfirst[1]:
+                friend_costs[j] = maxsecond[0]
+            else:
+                friend_costs[j] = maxfirst[0]
+
+    else:
+
+print(friend_costs)
