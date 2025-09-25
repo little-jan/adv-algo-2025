@@ -46,22 +46,10 @@ print(sccs)
 
 friend_costs = [0 for _ in range(num_vertices + 1)]
 visited = []
-for i in sccs:
-    if len(i) > 1:
-        maxfirst = [0, 0]
-        maxsecond = [0, 0]
-        for j in i:
-            if vertices[j] > maxfirst[0]:
-                maxsecond = maxfirst[:]
-                maxfirst = [vertices[j], j]
-            elif vertices[j] > maxsecond[0]:
-                maxsecond = [vertices[j], j]
-        for j in i:
-            if j == maxfirst[1]:
-                friend_costs[j] = maxsecond[0]
-            else:
-                friend_costs[j] = maxfirst[0]
-
-    else:
+for i in sccs:   # i is a cycle
+    if len(i) == 1:
+        current = i
+        weight = vertices[i]
+        visited.append()
 
 print(friend_costs)
