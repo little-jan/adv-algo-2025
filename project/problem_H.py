@@ -1,3 +1,5 @@
+from heapq import *
+
 def tree_maker(lst):
     children = {}
 
@@ -9,32 +11,42 @@ def tree_maker(lst):
             children[manager].append(child_id)
     return children
 
-def ranker(children, num_employees):
-    rankings = [None] * (num_employees + 1)
 
-    rankings[1] = 0
+from heapq import *
 
-    def dfs(employee):
-        if employee in children:
-            for child in children[employee]:
-                if rankings[child] is None:
-                    rankings[child] = rankings[employee] + 1
-                    dfs(child)
 
-    dfs(1)
-    return rankings
+def dijkstras(adj_dict, num_nodes, src):
+    dist = {}
+    pred = {}
+    pq = []
+
+    heappush(pq, (0, None, src))  # set is formatted (distance, predecessor, vertex)
+
+    while pq:
+        d, p, u = heappop(pq)
+        if u in dist:
+            continue
+        dist[u] = d
+        pred[u] = p
+
+        if u in adj_dict:
+            for child in adj_dict[u]:
+                if child not in dist:
+                    heappush(pq, (d + 1, u, child))
+
+    return dist, pred
 
 num_employees, distance = map(int, input().split())
 lst = list(map(int, input().split()))
 children = tree_maker(lst)
-rankings = ranker(children, num_employees)
+rankings, pred = dijkstras(children, num_employees, 1)
 
 trained = 1
 
-for i in range(len(rankings)):
-    rank = rankings[i]
+for i in range(1, len(rankings) + 1):
+    rank = rankings.get(i)
 
-    if rank is None or rank == 0:
+    if rank == 0:
         continue
 
     else:
