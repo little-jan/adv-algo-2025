@@ -1,34 +1,33 @@
-def tree_maker(lst, num_employees):
+def tree_maker(lst):
     children = {}
-    for child in range(num_employees):
-        parent = lst[child]
-        if parent not in children:
-            children[parent] = [child]
+
+    for i, manager in enumerate(lst):
+        child_id = i + 2
+        if manager not in children:
+            children[manager] = [child_id]
         else:
-            children[parent].append(child)
+            children[manager].append(child_id)
     return children
 
-def ranking(children, num_employees):
-    rankings = [0] * num_employees
+def rank(children, num_employees):
+    rankings = [None] * (num_employees + 1)
 
-    def dfs(node, depth):
-        rankings[node] = depth
-        if node in children:
-            for child in children[node]:
-                dfs(child, depth + 1)
+    rankings[1] = 0
 
-    dfs(1, 1)  # start at root=1 with depth=1
+    def dfs(employee):
+        if employee in children:
+            for child in children[employee]:
+                if rankings[child] is None:
+                    rankings[child] = rankings[employee] + 1
+                    dfs(child)
 
-    for i in range(num_employees):
-        if rankings[i] == 0:
-            dfs(i, 2)
-
+    dfs(1)
     return rankings
 
 num_employees, distance = map(int, input().split())
 lst = list(map(int, input().split()))
-children = tree_maker(lst, num_employees)
-rankings = ranking(children, num_employees)
+children = tree_maker(lst)
+rankings = rank(children, num_employees)
 
 print(children)
 print(rankings)
