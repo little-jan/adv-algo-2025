@@ -1,7 +1,69 @@
-# doesn't hit timelimit on DOMJUDGE
+def dfs_postorder(adjlist, visited, root):
+    postorder = []
+    def dfs(current):
+        if not visited[current]:
+            visited[current] = True
+            for neighbor in reversed(adjlist[current]):
+                dfs(neighbor)
+            postorder.append(current)
+    dfs(root)
+    return postorder
 
+def tranpose(adjlist):
+    n = len(adjlist)
+    result = [[] for _ in range(n)]
+    for u in range(1, n):
+        for v in adjlist[u]:
+            result[v].append(u)
+    return result
 
-from collections import deque
+def kosarajus(adjlist):
+    postorder = []
+    visited = [False for _ in adjlist]
+    for i in range(1, len(adjlist)):
+        if not visited[i]:
+            postorder.extend(dfs_postorder(adjlist, visited, i))
+    adjlist = tranpose(adjlist)
+    visited = [False for _ in adjlist]
+    sccs = []
+    for i in reversed(postorder):
+        if not visited[i]:
+            sccs.append(dfs_postorder(adjlist, visited, i))
+    return sccs
+
+def scc_processing(sccs, num_vertices):
+    len_sccs = len(sccs)
+
+    scc_groups = [0 for _ in range(num_vertices + 1)]
+    for i in range(len(sccs)):
+        for vertex in sccs[i]:
+            scc_groups[vertex] = i
+
+    scc_maximums = []
+    for i in range(len_sccs):
+        scc = sccs[i]
+        max1, max2 = 0, 0
+        for vertex in scc:
+            cost = vertex_weights[vertex]
+            if cost > max1:
+                max2 = max1
+                max1 = cost
+            elif max1 > cost > max2:
+                max2 = cost
+                
+        current_scc_dict = {}
+        current_scc_dict['max1'] = max1
+        current_scc_dict['max2'] = max2
+        current_scc_dict['size'] = len(scc)
+        scc_maximums.append(current_scc_dict)
+
+    scc_dag = [set() for _ in range(len_sccs)]
+    for u in range(1, num_vertices + 1):
+        for v in adj[u]:
+            if scc_groups[u] != scc_groups[v]:
+                scc_dag[scc_groups[u]].add(scc_groups[v])
+
+    return scc_groups, scc_maximums, scc_dag
 
 num_vertices, num_edges = map(int, input().split())
 
@@ -14,26 +76,31 @@ for i in range(num_edges):
     u, v = map(int, input().split())
     adj[u].append(v)
 
-friendship_costs = [0] * (num_vertices + 1)
+sccs = kosarajus(adj)
+len_sccs = len(sccs)
 
-for src in range(1, num_vertices + 1):
+scc_groups, scc_maximums, scc_dag = scc_processing(sccs, num_vertices)
 
-    q = deque([src])
-    reachable_people = {src}
+dp = [x['max1'] for x in scc_maximums]
+for i in reversed(range(len_sccs)):
+    for neighbouring_scc in scc_dag[i]:
+        dp[i] = max(dp[i], dp[neighbouring_scc])
 
-    while q:
-        current = q.popleft()
-        for neighbor in adj[current]:
-            if neighbor not in reachable_people:
-                reachable_people.add(neighbor)
-                q.append(neighbor)
+friendship_costs = [0 for _ in range(num_vertices + 1)]
+for i in range(1, num_vertices + 1):
+    scc_group = scc_groups[i]
+    v_cost = vertex_weights[i]
+    max_reachable = dp[scc_group]
 
-    max_reachable_cost = 0
-    for person in reachable_people:
-        if person != src:
-            max_reachable_cost = max(max_reachable_cost, vertex_weights[person])
+    if v_cost < max_reachable:
+        friendship_costs[i] = max_reachable
+    else:
+        max_cost = 0
+        for neighbor_scc in scc_dag[scc_group]:
+            max_cost = max(max_cost, dp[neighbor_scc])
 
-    friendship_costs[src] = max_reachable_cost
+        scnd_max_cost = scc_maximums[scc_group]['max2']
+        friendship_costs[i] = max(scnd_max_cost, max_cost)
 
 for val in friendship_costs[1:]:
     print(val)
