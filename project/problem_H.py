@@ -9,7 +9,7 @@ def tree_maker(lst):
             children[manager].append(child_id)
     return children
 
-def rank(children, num_employees):
+def ranker(children, num_employees):
     rankings = [None] * (num_employees + 1)
 
     rankings[1] = 0
@@ -27,7 +27,18 @@ def rank(children, num_employees):
 num_employees, distance = map(int, input().split())
 lst = list(map(int, input().split()))
 children = tree_maker(lst)
-rankings = rank(children, num_employees)
+rankings = ranker(children, num_employees)
 
-print(children)
-print(rankings)
+trained = 1
+
+for i in range(len(rankings)):
+    rank = rankings[i]
+
+    if rank is None or rank == 0:
+        continue
+
+    else:
+        if rank % distance == 0 and children.get(i):
+            trained += 1
+
+print(trained)
