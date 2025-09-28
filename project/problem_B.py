@@ -1,14 +1,25 @@
 def dfs_postorder(adjlist, visited, root):
     postorder = []
+    stack = [root]
+    neighbour_stack = [iter(adjlist[root])]
+    visited[root] = True
 
-    def dfs(current):
-        if not visited[current]:
-            visited[current] = True
-            for neighbor in reversed(adjlist[current]):
-                dfs(neighbor)
+    while stack:
+        current = stack[-1]
+        current_neighbours = neighbour_stack[-1]
+
+        for neighbour in current_neighbours:
+            if not visited[neighbour]:
+                visited[neighbour] = True
+                stack.append(neighbour)
+                neighbour_stack.append(iter(adjlist[neighbour]))
+                break
+
+        else:
+            stack.pop()
+            neighbour_stack.pop()
             postorder.append(current)
-
-    dfs(root)
+            visited[current] = True
     return postorder
 
 
@@ -47,7 +58,7 @@ def scc_processing(sccs, num_vertices):
             scc_groups[vertex] = i
 
     scc_maximums = []
-    for i in range(len_sccs):
+    for i in range(len(sccs)):
         scc = sccs[i]
         max1, max2 = 0, 0
         for vertex in scc:
@@ -81,12 +92,10 @@ for i in range(num_edges):
 
 
 sccs = kosarajus(adj)
-len_sccs = len(sccs)
-
 scc_groups, scc_maximums, scc_dag = scc_processing(sccs, num_vertices)
 
 dp = [x[0] for x in scc_maximums]
-for i in reversed(range(len_sccs)):
+for i in reversed(range(len(sccs))):
     for neighbouring_scc in scc_dag[i]:
         dp[i] = max(dp[i], dp[neighbouring_scc])
 
