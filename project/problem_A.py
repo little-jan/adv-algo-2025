@@ -13,6 +13,11 @@ def delightful(srted):
         final_lst.append(srted[j])
     return final_lst
 
+
+
+
+#   ----- Quicksort code is borrowed from https://www.geeksforgeeks.org/dsa/quick-sort-algorithm/ -----
+
 def pivot(val1, val2, val3):
     if (val1 <= val2 <= val3) or (val3 <= val2 <= val1):
         return val2
@@ -50,6 +55,9 @@ def quicksort(lst, first, last):
         pi = partition(lst, first, last)
         quicksort(lst, first, pi - 1)
         quicksort(lst, pi + 1, last)
+
+
+
 
 length = int(input())
 lst = list(map(int, input().split()))

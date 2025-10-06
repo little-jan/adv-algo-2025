@@ -12,6 +12,10 @@ def tree_maker(lst):
             children[manager].append(child_id)
     return children
 
+
+
+# ----- Dijkstra's algorithm is heavily inspired by the version of Dijkstra's in lecture 14's slides -----
+
 def dijkstras(adj_dict, src):
     dist = {}
     pred = {}
@@ -32,6 +36,9 @@ def dijkstras(adj_dict, src):
                     heappush(pq, (d + 1, u, child))
 
     return dist, pred
+
+
+
 
 num_employees, distance = map(int, input().split())
 lst = list(map(int, input().split()))
